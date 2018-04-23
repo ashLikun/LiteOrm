@@ -1,3 +1,26 @@
+
+[![Release](https://jitpack.io/v/ashLikun/LiteOrm.svg)](https://jitpack.io/#ashLikun/LiteOrm)
+
+# **LiteOrm**
+1:数据库封装ORM
+## 使用方法
+
+build.gradle文件中添加:
+```gradle
+allprojects {
+    repositories {
+        maven { url "https://jitpack.io" }
+    }
+}
+```
+并且:
+
+```gradle
+dependencies {
+    implementation 'com.github.ashLikun:LiteOrm:{latest version}'//LiteOrm
+}
+# 1.用法
+
 ## LiteOrm：Android高性能数据库框架
 
 LiteOrm是一个小巧、强大、比系统自带数据库操作性能快1倍的 android ORM 框架类库，开发者一行代码实现数据库的增删改查操作，以及实体关系的持久化和自动映射。
