@@ -1,30 +1,42 @@
-buildscript {
-    repositories {
-        jcenter()
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
     }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+/**
+ * aar文件的编译
+ */
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+        maven {
+            url "https://jitpack.io"
+        }
     }
 }
 
-allprojects {
-    repositories {
-        jcenter()
-    }
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile rootProject.ext.designVersion
+//    compile 'me.zhanghai.android.materialprogressbar:library:1.4.1'
+    compileOnly 'com.android.support:support-annotations:' + rootProject.ext.superVersion
+    implementation 'com.github.ashLikun:AnimationMenu:1.0.4'
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
-ext {
-    compileSdkVersion = 25
-    buildToolsVersion = "25.0.3"
-    designVersion = "com.android.support:design:25.3.1"
-    v4Version = "com.android.support:support-v4:25.3.1"
-    frameVersion = "1.4.0"
-    targetSdkVersion = 19
-    minSdkVersion = 14
-    versionCode = 1
-    versionName = "0.0.1"
-}
+apply from: '../maven.gradle'
+
+
