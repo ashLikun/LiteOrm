@@ -16,6 +16,7 @@
 package com.ashlikun.orm.db;
 
 import android.content.Context;
+
 import com.ashlikun.orm.db.assit.Checker;
 import com.ashlikun.orm.db.assit.SQLiteHelper.OnUpdateListener;
 
@@ -23,7 +24,7 @@ import com.ashlikun.orm.db.assit.SQLiteHelper.OnUpdateListener;
  * 数据操作配置
  *
  * @author MaTianyu
- *         2013-6-2下午4:36:16
+ * 2013-6-2下午4:36:16
  */
 public class DataBaseConfig {
     public static final String DEFAULT_DB_NAME = "liteorm.db";
@@ -32,6 +33,8 @@ public class DataBaseConfig {
     public Context context;
     public boolean debugged = false;
     public String dbName = DEFAULT_DB_NAME;
+    //数据库的路径，可以是SD卡,如果为null代表用户私有目录
+    public String sdDbPath;
     public int dbVersion = DEFAULT_DB_VERSION;
     public OnUpdateListener onUpdateListener;
 
@@ -59,7 +62,7 @@ public class DataBaseConfig {
     @Override
     public String toString() {
         return "DataBaseConfig [mContext=" + context + ", mDbName=" + dbName + ", mDbVersion="
-               + dbVersion + ", mOnUpdateListener=" + onUpdateListener + "]";
+                + dbVersion + ", mOnUpdateListener=" + onUpdateListener + "]";
     }
 
 }

@@ -92,7 +92,7 @@ public abstract class LiteOrm extends SQLiteClosable implements DataBase {
 
     @Override
     public SQLiteDatabase openOrCreateDatabase() {
-        initDatabasePath(mConfig.dbName);
+        initDatabasePath(mConfig);
         if (mHelper != null) {
             justRelease();
         }
@@ -102,9 +102,13 @@ public abstract class LiteOrm extends SQLiteClosable implements DataBase {
         return mHelper.getWritableDatabase();
     }
 
-    private void initDatabasePath(String path) {
-        OrmLog.i(TAG, "create  database path: " + path);
-        path = mConfig.context.getDatabasePath(mConfig.dbName).getPath();
+    private void initDatabasePath(DataBaseConfig config) {
+        String path;
+        if (config.sdDbPath == null) {
+            path = mConfig.context.getDatabasePath(mConfig.dbName).getPath();
+        } else {
+            path = config.sdDbPath + File.separator + config.dbName;
+        }
         OrmLog.i(TAG, "context database path: " + path);
         File dbp = new File(path).getParentFile();
         if (dbp != null && !dbp.exists()) {
@@ -346,7 +350,6 @@ public abstract class LiteOrm extends SQLiteClosable implements DataBase {
 
     @Override
     public SQLiteDatabase openOrCreateDatabase(String path, SQLiteDatabase.CursorFactory factory) {
-        path = mConfig.context.getDatabasePath(mConfig.dbName).getPath();
         return SQLiteDatabase.openOrCreateDatabase(path, factory);
     }
 
