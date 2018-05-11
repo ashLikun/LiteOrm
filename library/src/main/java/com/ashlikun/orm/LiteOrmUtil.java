@@ -8,8 +8,9 @@ import com.ashlikun.orm.db.DataBaseConfig;
 
 public class LiteOrmUtil {
     private static LiteOrm liteOrm;
-
-    private static OnNeedListener listener;
+    private static Application app;
+    private static boolean isDebug = true;
+    private static int versionCode = 1;
 
     /**
      * 作者　　: 李坤
@@ -19,41 +20,33 @@ public class LiteOrmUtil {
      * 方法功能：一定要在Application里面调用
      */
 
-    public static void init(OnNeedListener listener) {
-        LiteOrmUtil.listener = listener;
+    public static void init(Application app) {
+        LiteOrmUtil.app = app;
     }
 
+    public static void setIsDebug(boolean isDebug) {
+        LiteOrmUtil.isDebug = isDebug;
+    }
 
-    public interface OnNeedListener {
-        public Application getApplication();
-
-        public boolean isDebug();
-
-        public int getVersionCode();
+    public static void setVersionCode(int versionCode) {
+        LiteOrmUtil.versionCode = versionCode;
     }
 
     public static Application getApp() {
-        if (listener == null) {
+        if (app == null) {
             throw new RuntimeException("请在Application调用Utils的init方法");
         } else {
-            return listener.getApplication();
+            return app;
         }
     }
 
     public static boolean isDebug() {
-        if (listener == null) {
-            throw new RuntimeException("请在Application调用Utils的init方法");
-        } else {
-            return listener.isDebug();
-        }
+        return isDebug;
     }
 
     public static int versionCode() {
-        if (listener == null) {
-            throw new RuntimeException("请在Application调用Utils的init方法");
-        } else {
-            return listener.getVersionCode();
-        }
+
+        return versionCode;
     }
 
     private LiteOrmUtil() {
