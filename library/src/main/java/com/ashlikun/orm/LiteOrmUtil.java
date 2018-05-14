@@ -8,7 +8,6 @@ import com.ashlikun.orm.db.DataBaseConfig;
 
 public class LiteOrmUtil {
     private static LiteOrm liteOrm;
-    private static LiteOrm sdLiteOrm;
     private static Application app;
     private static boolean isDebug = true;
     private static int versionCode = 1;
@@ -24,18 +23,22 @@ public class LiteOrmUtil {
 
     public static void init(Application app) {
         LiteOrmUtil.app = app;
+        liteOrm = null;
     }
 
     public static void setIsDebug(boolean isDebug) {
         LiteOrmUtil.isDebug = isDebug;
+        liteOrm = null;
     }
 
     public static void setVersionCode(int versionCode) {
         LiteOrmUtil.versionCode = versionCode;
+        liteOrm = null;
     }
 
     public static void setSdDbPath(String sdDbPath) {
         LiteOrmUtil.sdDbPath = sdDbPath;
+        liteOrm = null;
     }
 
     public static Application getApp() {
@@ -70,29 +73,13 @@ public class LiteOrmUtil {
         return liteOrm;
     }
 
-    public static LiteOrm getSd() {
-        if (sdLiteOrm == null) {
-            synchronized (LiteOrmUtil.class) {
-                if (sdLiteOrm == null) {
-                    DataBaseConfig config = new DataBaseConfig(getApp());
-                    config.debugged = isDebug();
-                    config.dbVersion = versionCode();
-                    config.onUpdateListener = null;
-                    config.sdDbPath = sdDbPath;
-                    sdLiteOrm = LiteOrm.newSingleInstance(config);
-                }
-            }
-        }
-        return sdLiteOrm;
-
-    }
-
     private static void init() {
         if (liteOrm == null) {
             DataBaseConfig config = new DataBaseConfig(getApp());
             config.debugged = isDebug();
             config.dbVersion = versionCode();
             config.onUpdateListener = null;
+            config.sdDbPath = sdDbPath;
             liteOrm = LiteOrm.newSingleInstance(config);
         }
     }
