@@ -41,6 +41,13 @@ public class LiteOrmUtil {
         liteOrm = null;
     }
 
+    /**
+     * 清空单例
+     */
+    public static void cleanSing() {
+        liteOrm = null;
+    }
+
     public static Application getApp() {
         if (app == null) {
             throw new RuntimeException("请在Application调用Utils的init方法");
