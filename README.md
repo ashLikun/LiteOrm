@@ -231,3 +231,7 @@ LiteOrm将为开发者建一个名为“test_model”的数据库表，其字段
         liteOrm.openOrCreateDatabase();
         // 满血复活
 ```
+
+## 5:混淆
+        不混淆使用Table注解（数据库） 的类
+        -keep @com.ashlikun.orm.db.annotation.Table class * {*;}
