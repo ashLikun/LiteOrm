@@ -3,13 +3,18 @@ package com.ashlikun.orm.db.utils;
 import android.annotation.TargetApi;
 import android.database.Cursor;
 import android.os.Build;
-import android.util.Log;
-import com.ashlikun.orm.log.OrmLog;
+
 import com.ashlikun.orm.db.assit.Checker;
 import com.ashlikun.orm.db.model.EntityTable;
 import com.ashlikun.orm.db.model.Property;
+import com.ashlikun.orm.log.OrmLog;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -199,7 +204,10 @@ public class DataUtil implements Serializable {
             //start = System.nanoTime();
             switch (p.classType) {
                 case CLASS_TYPE_STRING:
-                    f.set(entity, c.getString(i));
+                    String string = c.getString(i);
+                    if (string != null) {
+                        f.set(entity, string);
+                    }
                     break;
                 case CLASS_TYPE_BOOLEAN:
                     f.set(entity, Boolean.parseBoolean(c.getString(i)));
@@ -225,7 +233,10 @@ public class DataUtil implements Serializable {
                     }
                     break;
                 case CLASS_TYPE_BYTE_ARRAY:
-                    f.set(entity, c.getBlob(i));
+                    byte[] blob = c.getBlob(i);
+                    if (blob != null) {
+                        f.set(entity, blob);
+                    }
                     break;
                 case CLASS_TYPE_CHAR:
                     String value = c.getString(i);
