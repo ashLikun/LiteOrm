@@ -4,7 +4,13 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/LiteOrm.iml" filepath="$PROJECT_DIR$/LiteOrm.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/LiteOrm.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/LiteOrm.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/LiteOrm.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/LiteOrm.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/LiteOrm.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/LiteOrm.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/LiteOrm.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/LiteOrm.app.unitTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/library/LiteOrm.library.iml" filepath="$PROJECT_DIR$/.idea/modules/library/LiteOrm.library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/library/LiteOrm.library.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/library/LiteOrm.library.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/library/LiteOrm.library.main.iml" filepath="$PROJECT_DIR$/.idea/modules/library/LiteOrm.library.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/library/LiteOrm.library.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/library/LiteOrm.library.unitTest.iml" />
     </modules>
   </component>
 </project>

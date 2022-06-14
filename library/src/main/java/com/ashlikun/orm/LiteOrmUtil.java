@@ -8,10 +8,12 @@ import com.ashlikun.orm.db.DataBaseConfig;
 
 public class LiteOrmUtil {
     private static LiteOrm liteOrm;
+    private static LiteOrm liteOrmCascade;
     private static Application app;
     private static boolean isDebug = true;
     private static int versionCode = 1;
     private static String sdDbPath;
+    private static DataBaseConfig config;
 
     /**
      * 作者　　: 李坤
@@ -41,6 +43,11 @@ public class LiteOrmUtil {
         liteOrm = null;
     }
 
+    public static void setConfig(DataBaseConfig config) {
+        LiteOrmUtil.config = config;
+        liteOrm = null;
+    }
+
     /**
      * 清空单例
      */
@@ -61,33 +68,49 @@ public class LiteOrmUtil {
     }
 
     public static int versionCode() {
-
         return versionCode;
     }
 
     private LiteOrmUtil() {
     }
 
+    public static DataBaseConfig getConfig() {
+        if (config == null) {
+            config = new DataBaseConfig(getApp());
+            config.debugged = isDebug();
+            config.dbVersion = versionCode();
+            config.onUpdateListener = null;
+            config.sdDbPath = sdDbPath;
+            return config;
+        }
+        return config;
+    }
 
+    /**
+     * 单表
+     */
     public static LiteOrm get() {
         if (liteOrm == null) {
             synchronized (LiteOrmUtil.class) {
                 if (liteOrm == null) {
-                    init();
+                    liteOrm = LiteOrm.newSingleInstance(getConfig());
                 }
             }
         }
         return liteOrm;
     }
 
-    private static void init() {
-        if (liteOrm == null) {
-            DataBaseConfig config = new DataBaseConfig(getApp());
-            config.debugged = isDebug();
-            config.dbVersion = versionCode();
-            config.onUpdateListener = null;
-            config.sdDbPath = sdDbPath;
-            liteOrm = LiteOrm.newSingleInstance(config);
+    /**
+     * 多表关联
+     */
+    public static LiteOrm getCascade() {
+        if (liteOrmCascade == null) {
+            synchronized (LiteOrmUtil.class) {
+                if (liteOrmCascade == null) {
+                    liteOrmCascade = LiteOrm.newCascadeInstance(getConfig());
+                }
+            }
         }
+        return liteOrmCascade;
     }
 }
