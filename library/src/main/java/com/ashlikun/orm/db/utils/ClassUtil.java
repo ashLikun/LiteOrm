@@ -1,14 +1,12 @@
 package com.ashlikun.orm.db.utils;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import com.ashlikun.orm.db.annotation.MapCollection;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -64,6 +62,9 @@ public class ClassUtil {
     public static Object newCollectionForField(Field field) throws IllegalAccessException, InstantiationException {
         MapCollection coll = field.getAnnotation(MapCollection.class);
         if (coll == null) {
+            if (field.getType() == List.class) {
+                return new ArrayList();
+            }
             return field.getType().newInstance();
         } else {
             return coll.value().newInstance();

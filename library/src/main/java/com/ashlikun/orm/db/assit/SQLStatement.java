@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Build;
+import android.os.Parcelable;
 
 import com.ashlikun.orm.LiteOrmUtil;
 import com.ashlikun.orm.db.TableManager;
@@ -81,6 +82,8 @@ public class SQLStatement implements Serializable {
         } else if (o instanceof byte[]) {
             mStatement.bindBlob(i, (byte[]) o);
         } else if (o instanceof Serializable) {
+            mStatement.bindBlob(i, DataUtil.objectToByte(o));
+        } else if (o instanceof Parcelable) {
             mStatement.bindBlob(i, DataUtil.objectToByte(o));
         } else {
             mStatement.bindNull(i);

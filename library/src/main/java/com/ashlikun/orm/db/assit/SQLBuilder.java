@@ -919,7 +919,7 @@ public class SQLBuilder {
             keyList.addAll(key2List);
         }
         if (sb != null) {
-            builder.where(sb.toString(), keyList.toArray(new String[keyList.size()]));
+            builder.where(sb.toString(), keyList.toArray(new Object[keyList.size()]));
         }
         return builder.createStatement();
     }

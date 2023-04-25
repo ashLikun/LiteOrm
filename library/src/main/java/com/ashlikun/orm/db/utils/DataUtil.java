@@ -3,6 +3,8 @@ package com.ashlikun.orm.db.utils;
 import android.annotation.TargetApi;
 import android.database.Cursor;
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.ashlikun.orm.LiteOrmUtil;
 import com.ashlikun.orm.db.assit.Checker;
@@ -21,6 +23,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -115,6 +118,7 @@ public class DataUtil implements Serializable {
     public static final int CLASS_TYPE_UNKNOWN = 13;
 
     public static final int CLASS_TYPE_CALENDAR = 14;
+    public static final int CLASS_TYPE_PARCELABLE = 15;
 
     /**
      * Returns data type of the given object.
@@ -170,6 +174,7 @@ public class DataUtil implements Serializable {
                 return INTEGER;
             case CLASS_TYPE_BYTE_ARRAY:
             case CLASS_TYPE_SERIALIZABLE:
+            case CLASS_TYPE_PARCELABLE:
             default:
                 return BLOB;
         }
@@ -268,6 +273,13 @@ public class DataUtil implements Serializable {
                         f.set(entity, byteToObject(bytes));
                     }
                     break;
+                case CLASS_TYPE_PARCELABLE:
+                    byte[] bytes2 = c.getBlob(i);
+                    if (bytes2 != null) {
+                        //序列化的对象
+                        f.set(entity, byteToParcelable(f, bytes2));
+                    }
+                    break;
                 default:
                     break;
             }
@@ -303,6 +315,8 @@ public class DataUtil implements Serializable {
             return CLASS_TYPE_CALENDAR;
         } else if (Serializable.class.isAssignableFrom(type)) {
             return CLASS_TYPE_SERIALIZABLE;
+        } else if (Parcelable.class.isAssignableFrom(type)) {
+            return CLASS_TYPE_PARCELABLE;
         }
         return CLASS_TYPE_UNKNOWN;
     }
@@ -321,10 +335,57 @@ public class DataUtil implements Serializable {
         }
     }
 
+    private static final HashMap<String, Parcelable.Creator<?>> mCreators = new HashMap();
+
+    /**
+     * byte[] 转为 Parcelable对象
+     */
+    public static Object byteToParcelable(Field field, byte[] bytes) {
+        Parcel source = Parcel.obtain();
+        source.unmarshall(bytes, 0, bytes.length);
+        source.setDataPosition(0);
+
+        try {
+            String name = field.getType().toString();
+            Parcelable.Creator creator;
+            synchronized (mCreators) {
+                creator = mCreators.get(name);
+                if (creator == null) {
+                    Field f = field.getType().getField("CREATOR");
+                    creator = (Parcelable.Creator) f.get(null);
+                    if (creator != null) {
+                        mCreators.put(name, creator);
+                    }
+                }
+            }
+
+            if (creator == null) {
+                throw new Exception("Parcelable protocol requires a non-null static Parcelable.Creator object called CREATOR on class " + name);
+            }
+
+            return (Parcelable) creator.createFromParcel(source);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        } finally {
+            source.recycle();
+        }
+    }
+
     /**
      * 对象 转为 byte[]
      */
     public static byte[] objectToByte(Object obj) throws IOException {
+        if (obj == null) {
+            return new byte[0];
+        }
+        if (obj instanceof Parcelable) {
+            Parcel source = Parcel.obtain();
+            ((Parcelable) obj).writeToParcel(source, 0);
+            byte[] bytes = source.marshall();
+            source.recycle();
+            return bytes;
+        }
         ObjectOutputStream oos = null;
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -332,8 +393,9 @@ public class DataUtil implements Serializable {
             oos.writeObject(obj);
             return bos.toByteArray();
         } finally {
-            if (oos != null)
+            if (oos != null) {
                 oos.close();
+            }
         }
     }
 
