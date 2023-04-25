@@ -4,7 +4,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Build;
-import android.util.Log;
+
+import com.ashlikun.orm.LiteOrmUtil;
 import com.ashlikun.orm.db.TableManager;
 import com.ashlikun.orm.db.assit.Querier.CursorParser;
 import com.ashlikun.orm.db.model.ColumnsValue;
@@ -19,7 +20,12 @@ import com.ashlikun.orm.log.OrmLog;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 
 /**
  * sql语句构造与执行
@@ -46,7 +52,8 @@ public class SQLStatement implements Serializable {
      */
     private SQLiteStatement mStatement;
 
-    public SQLStatement() {}
+    public SQLStatement() {
+    }
 
     public SQLStatement(String sql, Object[] args) {
         this.sql = sql;
@@ -68,7 +75,9 @@ public class SQLStatement implements Serializable {
         } else if (o instanceof Number) {
             mStatement.bindLong(i, ((Number) o).longValue());
         } else if (o instanceof Date) {
-            mStatement.bindLong(i, ((Date) o).getTime());
+            mStatement.bindString(i, LiteOrmUtil.dateConvert.bind(((Date) o)));
+        } else if (o instanceof Calendar) {
+            mStatement.bindString(i, LiteOrmUtil.calendarConvert.bind(((Calendar) o)));
         } else if (o instanceof byte[]) {
             mStatement.bindBlob(i, (byte[]) o);
         } else if (o instanceof Serializable) {
@@ -484,7 +493,7 @@ public class SQLStatement implements Serializable {
     @Override
     public String toString() {
         return "SQLStatement [sql=" + sql + ", bindArgs=" + Arrays.toString(bindArgs) + ", mStatement=" + mStatement
-               + "]";
+                + "]";
     }
     /*------------------------------ 私有方法 ------------------------------*/
 

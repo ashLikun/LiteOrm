@@ -3,7 +3,13 @@ package com.ashlikun.orm;
 
 import android.app.Application;
 
+import com.ashlikun.orm.convert.DefaultConvert;
+import com.ashlikun.orm.convert.OnFiledConvertCall;
 import com.ashlikun.orm.db.DataBaseConfig;
+import com.ashlikun.orm.db.annotation.NotNull;
+
+import java.util.Calendar;
+import java.util.Date;
 
 
 public class LiteOrmUtil {
@@ -15,16 +21,22 @@ public class LiteOrmUtil {
     private static String sdDbPath;
     private static DataBaseConfig config;
 
+    @NotNull
+    public static OnFiledConvertCall<Date, String> dateConvert = new DefaultConvert.DefaultDataConvert();
+    @NotNull
+    public static OnFiledConvertCall<Calendar, String> calendarConvert = new DefaultConvert.DefaultCalendarConvertConvert();
+
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/7 10:29
-     * 邮箱　　：496546144@qq.com
-     * <p>
-     * 方法功能：一定要在Application里面调用
+     * 一定要在Application里面调用
      */
 
-    public static void init(Application app) {
+    public static void init(Application app, boolean isDebug) {
         LiteOrmUtil.app = app;
+        try {
+            LiteOrmUtil.versionCode = app.getPackageManager().getPackageInfo(app.getPackageName(), 0).versionCode;
+        } catch (Exception e) {
+        }
+        LiteOrmUtil.isDebug = isDebug;
         liteOrm = null;
     }
 

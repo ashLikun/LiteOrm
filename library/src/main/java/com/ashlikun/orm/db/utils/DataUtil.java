@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.database.Cursor;
 import android.os.Build;
 
+import com.ashlikun.orm.LiteOrmUtil;
 import com.ashlikun.orm.db.assit.Checker;
 import com.ashlikun.orm.db.model.EntityTable;
 import com.ashlikun.orm.db.model.Property;
@@ -112,6 +113,7 @@ public class DataUtil implements Serializable {
     public static final int CLASS_TYPE_SERIALIZABLE = 12;
     public static final int CLASS_TYPE_UNKNOWN = 13;
 
+    public static final int CLASS_TYPE_CALENDAR = 14;
 
     /**
      * Returns data type of the given object.
@@ -153,6 +155,8 @@ public class DataUtil implements Serializable {
             case CLASS_TYPE_STRING:
             case CLASS_TYPE_BOOLEAN:
             case CLASS_TYPE_CHAR:
+            case CLASS_TYPE_DATE:
+            case CLASS_TYPE_CALENDAR:
                 return TEXT;
             case CLASS_TYPE_DOUBLE:
             case CLASS_TYPE_FLOAT:
@@ -161,7 +165,7 @@ public class DataUtil implements Serializable {
             case CLASS_TYPE_INT:
             case CLASS_TYPE_SHORT:
             case CLASS_TYPE_BYTE:
-            case CLASS_TYPE_DATE:
+
                 return INTEGER;
             case CLASS_TYPE_BYTE_ARRAY:
             case CLASS_TYPE_SERIALIZABLE:
@@ -245,9 +249,15 @@ public class DataUtil implements Serializable {
                     }
                     break;
                 case CLASS_TYPE_DATE:
-                    Long time = c.getLong(i);
+                    String time = c.getString(i);
                     if (time != null) {
-                        f.set(entity, new Date(time));
+                        f.set(entity, LiteOrmUtil.dateConvert.set(f, time));
+                    }
+                    break;
+                case CLASS_TYPE_CALENDAR:
+                    String time2 = c.getString(i);
+                    if (time2 != null) {
+                        f.set(entity, LiteOrmUtil.calendarConvert.set(f, time2));
                     }
                     break;
                 case CLASS_TYPE_SERIALIZABLE:
