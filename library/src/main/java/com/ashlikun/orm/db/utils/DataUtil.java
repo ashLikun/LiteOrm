@@ -18,6 +18,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -298,6 +299,8 @@ public class DataUtil implements Serializable {
             return CLASS_TYPE_CHAR;
         } else if (Date.class.isAssignableFrom(type)) {
             return CLASS_TYPE_DATE;
+        } else if (Calendar.class.isAssignableFrom(type)) {
+            return CLASS_TYPE_CALENDAR;
         } else if (Serializable.class.isAssignableFrom(type)) {
             return CLASS_TYPE_SERIALIZABLE;
         }
