@@ -1,6 +1,7 @@
 package com.ashlikun.orm.db.impl;
 
 import android.database.sqlite.SQLiteDatabase;
+
 import com.ashlikun.orm.LiteOrm;
 import com.ashlikun.orm.db.DataBaseConfig;
 import com.ashlikun.orm.db.TableManager;
@@ -182,6 +183,24 @@ public final class SingleSQLiteImpl extends LiteOrm {
     }
 
     @Override
+    public int deleteById(Object id, Class claxx) {
+        EntityTable table = TableManager.getTable(claxx);
+        if (mTableManager.isSQLTableCreated(table.name)) {
+            acquireReference();
+            try {
+                SQLiteDatabase db = mHelper.getWritableDatabase();
+                return SQLBuilder.buildDeleteSql(id, claxx).execDelete(db);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                releaseReference();
+            }
+        }
+        return SQLStatement.NONE;
+    }
+
+
+    @Override
     public int delete(Object entity) {
         EntityTable table = TableManager.getTable(entity);
         if (mTableManager.isSQLTableCreated(table.name)) {
@@ -215,7 +234,8 @@ public final class SingleSQLiteImpl extends LiteOrm {
                     db.beginTransaction();
                     try {
                         rows = CollSpliter.split(collection, SQLStatement.IN_TOP_LIMIT, new CollSpliter.Spliter<T>() {
-                            @Override public int oneSplit(ArrayList<T> list) throws Exception {
+                            @Override
+                            public int oneSplit(ArrayList<T> list) throws Exception {
                                 return SQLBuilder.buildDeleteSql(list).execDeleteCollection(db, list);
                             }
                         });
@@ -284,7 +304,9 @@ public final class SingleSQLiteImpl extends LiteOrm {
         if (mTableManager.isSQLTableCreated(table.name)) {
             acquireReference();
             try {
-                if (start < 0 || end < start) { throw new RuntimeException("start must >=0 and smaller than end"); }
+                if (start < 0 || end < start) {
+                    throw new RuntimeException("start must >=0 and smaller than end");
+                }
                 if (start != 0) {
                     start -= 1;
                 }

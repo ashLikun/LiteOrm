@@ -1,11 +1,24 @@
 package com.ashlikun.orm.db.assit;
 
 import android.util.SparseArray;
+
 import com.ashlikun.orm.db.TableManager;
-import com.ashlikun.orm.db.annotation.*;
+import com.ashlikun.orm.db.annotation.Check;
+import com.ashlikun.orm.db.annotation.Collate;
+import com.ashlikun.orm.db.annotation.Conflict;
+import com.ashlikun.orm.db.annotation.Default;
+import com.ashlikun.orm.db.annotation.NotNull;
+import com.ashlikun.orm.db.annotation.Temporary;
+import com.ashlikun.orm.db.annotation.Unique;
+import com.ashlikun.orm.db.annotation.UniqueCombine;
 import com.ashlikun.orm.db.enums.AssignType;
-import com.ashlikun.orm.db.model.*;
+import com.ashlikun.orm.db.model.ColumnsValue;
+import com.ashlikun.orm.db.model.ConflictAlgorithm;
+import com.ashlikun.orm.db.model.EntityTable;
+import com.ashlikun.orm.db.model.MapInfo;
 import com.ashlikun.orm.db.model.MapInfo.MapTable;
+import com.ashlikun.orm.db.model.MapProperty;
+import com.ashlikun.orm.db.model.Property;
 import com.ashlikun.orm.db.utils.ClassUtil;
 import com.ashlikun.orm.db.utils.DataUtil;
 import com.ashlikun.orm.db.utils.FieldUtil;
@@ -85,7 +98,7 @@ public class SQLBuilder {
      */
     public static SQLStatement buildGetLastRowId(EntityTable table) {
         return new SQLStatement(SELECT_MAX + PARENTHESES_LEFT + table.key.column
-                                + PARENTHESES_RIGHT + FROM + table.name, null);
+                + PARENTHESES_RIGHT + FROM + table.name, null);
     }
 
     /**
@@ -104,9 +117,9 @@ public class SQLBuilder {
 
     /**
      * 构建【表】sql语句
-     *
+     * <p>
      * create [temp] table if not exists (table-name) (co1 TEXT, co2 TEXT, UNIQUE (co1, co2))
-     *
+     * <p>
      * such as : CREATE TABLE IF NOT EXISTS table-name (_id INTEGER PRIMARY KEY AUTOINCREMENT ,xx TEXT)
      */
     public static SQLStatement buildCreateTable(EntityTable table) {
@@ -524,9 +537,28 @@ public class SQLBuilder {
     }
 
     /**
+     * 根据id构建删除sql语句
+     * delete from [table] where id=?
+     */
+    public static SQLStatement buildDeleteSql(Object id, Class claxx) {
+        SQLStatement stmt = new SQLStatement();
+        try {
+            EntityTable table = TableManager.getTable(claxx, true);
+            if (table.key != null) {
+                stmt.sql = DELETE_FROM + table.name + WHERE + table.key.column + EQUALS_HOLDER;
+                stmt.bindArgs = new Object[]{id};
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return stmt;
+    }
+
+    /**
      * 构建批量删除sql语句
      * delete from [table] where [key] in (?,?)
-     *
+     * <p>
      * 注意：collection 数量不能超过999
      */
     public static SQLStatement buildDeleteSql(Collection<?> collection) {
@@ -540,7 +572,7 @@ public class SQLBuilder {
                 if (i == 0) {
                     table = TableManager.getTable(entity);
                     sb.append(DELETE_FROM).append(table.name).append(WHERE)
-                      .append(table.key.column).append(IN).append(PARENTHESES_LEFT).append(HOLDER);
+                            .append(table.key.column).append(IN).append(PARENTHESES_LEFT).append(HOLDER);
                 } else {
                     sb.append(COMMA_HOLDER);
                 }
@@ -577,11 +609,11 @@ public class SQLBuilder {
         String orderBy = Checker.isEmpty(orderAscColumn) ? key : orderAscColumn;
         StringBuilder sb = new StringBuilder();
         sb.append(DELETE_FROM).append(table.name).append(WHERE).append(key)
-          .append(IN).append(PARENTHESES_LEFT)
-          .append(SELECT).append(key)
-          .append(FROM).append(table.name)
-          .append(ORDER_BY).append(orderBy)
-          .append(ASC).append(LIMIT).append(start).append(COMMA).append(end).append(PARENTHESES_RIGHT);
+                .append(IN).append(PARENTHESES_LEFT)
+                .append(SELECT).append(key)
+                .append(FROM).append(table.name)
+                .append(ORDER_BY).append(orderBy)
+                .append(ASC).append(LIMIT).append(start).append(COMMA).append(end).append(PARENTHESES_RIGHT);
         stmt.sql = sb.toString();
         return stmt;
     }
@@ -684,7 +716,7 @@ public class SQLBuilder {
                                     //        Arrays.asList((Object[]) mapObject));
                                 } else {
                                     throw new RuntimeException("OneToMany and ManyToMany Relation," +
-                                                               " You must use array or collection object");
+                                            " You must use array or collection object");
                                 }
                                 if (Checker.isEmpty(sqlList)) {
                                     mapInfo.addNewRelationSQL(sqlList);
@@ -855,9 +887,9 @@ public class SQLBuilder {
         if (key2 != null) {
             StringBuilder sql = new StringBuilder(128);
             sql.append(INSERT).append(INTO).append(mapTableName)
-               .append(PARENTHESES_LEFT).append(table1.name)
-               .append(COMMA).append(table2.name)
-               .append(PARENTHESES_RIGHT).append(VALUES).append(TWO_HOLDER);
+                    .append(PARENTHESES_LEFT).append(table1.name)
+                    .append(COMMA).append(table2.name)
+                    .append(PARENTHESES_RIGHT).append(VALUES).append(TWO_HOLDER);
             SQLStatement stmt = new SQLStatement();
             stmt.sql = sql.toString();
             stmt.bindArgs = new Object[]{key1, key2};
@@ -930,7 +962,7 @@ public class SQLBuilder {
     public static SQLStatement buildQueryRelationSql(EntityTable table1, EntityTable table2, Object key1) {
         SQLStatement sqlStatement = new SQLStatement();
         sqlStatement.sql = SELECT_ANY_FROM + TableManager.getMapTableName(table1, table2)
-                           + WHERE + table1.name + EQUALS_HOLDER;
+                + WHERE + table1.name + EQUALS_HOLDER;
         sqlStatement.bindArgs = new String[]{String.valueOf(key1)};
         return sqlStatement;
     }

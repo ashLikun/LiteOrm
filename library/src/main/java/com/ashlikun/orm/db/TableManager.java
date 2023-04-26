@@ -66,7 +66,7 @@ public final class TableManager {
      * key : Class Name
      * value: {@link EntityTable}
      */
-    private final static HashMap<String, EntityTable> mEntityTableMap = new HashMap<String, EntityTable>();
+    private final static HashMap<String, EntityTable> mEntityTableMap = new HashMap<>();
 
     public TableManager(String dbName, SQLiteDatabase db) {
         this.dbName = dbName;
@@ -411,7 +411,7 @@ public final class TableManager {
             table = new EntityTable();
             table.claxx = claxx;
             table.name = getTableName(claxx);
-            table.pmap = new LinkedHashMap<String, Property>();
+            table.pmap = new LinkedHashMap<>();
             List<Field> fields = FieldUtil.getAllDeclaredFields(claxx);
             for (Field f : fields) {
                 if (FieldUtil.isInvalid(f)) {

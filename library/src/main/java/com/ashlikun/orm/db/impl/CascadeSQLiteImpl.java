@@ -2,19 +2,35 @@ package com.ashlikun.orm.db.impl;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
 import com.ashlikun.orm.LiteOrm;
 import com.ashlikun.orm.db.DataBaseConfig;
 import com.ashlikun.orm.db.TableManager;
-import com.ashlikun.orm.db.assit.*;
+import com.ashlikun.orm.db.assit.Checker;
+import com.ashlikun.orm.db.assit.Querier;
+import com.ashlikun.orm.db.assit.QueryBuilder;
+import com.ashlikun.orm.db.assit.SQLBuilder;
+import com.ashlikun.orm.db.assit.SQLStatement;
+import com.ashlikun.orm.db.assit.Transaction;
 import com.ashlikun.orm.db.assit.Transaction.Worker;
-import com.ashlikun.orm.db.model.*;
+import com.ashlikun.orm.db.assit.WhereBuilder;
+import com.ashlikun.orm.db.model.ColumnsValue;
+import com.ashlikun.orm.db.model.ConflictAlgorithm;
+import com.ashlikun.orm.db.model.EntityTable;
+import com.ashlikun.orm.db.model.MapProperty;
+import com.ashlikun.orm.db.model.Property;
+import com.ashlikun.orm.db.model.RelationKey;
 import com.ashlikun.orm.db.utils.ClassUtil;
 import com.ashlikun.orm.db.utils.DataUtil;
 import com.ashlikun.orm.db.utils.FieldUtil;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * 数据SQLite操作关联实现
@@ -181,6 +197,17 @@ public final class CascadeSQLiteImpl extends LiteOrm {
         return SQLStatement.NONE;
     }
 
+    @Override
+    public int deleteById(Object id, Class claxx) {
+        //查询出来数据，再删除
+        Object obj = queryById(id.toString(), claxx);
+        if (obj != null) {
+            return delete(obj);
+        } else {
+            return SQLStatement.NONE;
+        }
+    }
+
     /**
      * 主动删除其mapping数据
      */
@@ -189,12 +216,9 @@ public final class CascadeSQLiteImpl extends LiteOrm {
         acquireReference();
         try {
             SQLiteDatabase db = mHelper.getWritableDatabase();
-            Integer rowID = Transaction.execute(db, new Worker<Integer>() {
-                @Override
-                public Integer doTransaction(SQLiteDatabase db) throws Exception {
-                    HashMap<String, Integer> handleMap = new HashMap<String, Integer>();
-                    return checkTableAndDeleteRecursive(entity, db, handleMap);
-                }
+            Integer rowID = Transaction.execute(db, db1 -> {
+                HashMap<String, Integer> handleMap = new HashMap<>();
+                return checkTableAndDeleteRecursive(entity, db1, handleMap);
             });
             if (rowID != null) {
                 return rowID;
@@ -834,6 +858,7 @@ public final class CascadeSQLiteImpl extends LiteOrm {
         return SQLStatement.NONE;
     }
 
+
     /**
      * 处理一个实体中所有的关联实体。
      */
@@ -863,6 +888,36 @@ public final class CascadeSQLiteImpl extends LiteOrm {
                             coll = Arrays.asList((Object[]) array);
                         }
                         handleMapToMany(table1, table2, key1, coll, db, insertNew, handleMap);
+                    } else {
+                        throw new RuntimeException("OneToMany and ManyToMany Relation, you must use collection or array object");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 处理一个实体中所有的关联实体。
+     */
+    private void handleMapping(Object key1, Class claxx, SQLiteDatabase db,
+                               boolean insertNew, HashMap<String, Integer> handleMap)
+            throws Exception {
+        EntityTable table1 = TableManager.getTable(claxx);
+        // 2. 存储[关联实体]以及其[关系映射]
+        if (table1.mappingList != null) {
+            for (MapProperty map : table1.mappingList) {
+                if (map.isToOne()) {
+                    // handle <one to one>,<many to one> relation.
+                    EntityTable table2 = TableManager.getTable(map.field.getType());
+                    handleMapToOne(table1, table2, key1, null, db, insertNew, handleMap);
+                } else if (map.isToMany()) {
+                    // hanlde <one to many>,<many to many> relation.
+                    if (ClassUtil.isCollection(map.field.getType())) {
+                        EntityTable table2 = TableManager.getTable(FieldUtil.getGenericType(map.field));
+                        handleMapToMany(table1, table2, key1, null, db, insertNew, handleMap);
+                    } else if (ClassUtil.isArray(map.field.getType())) {
+                        EntityTable table2 = TableManager.getTable(FieldUtil.getComponentType(map.field));
+                        handleMapToMany(table1, table2, key1, null, db, insertNew, handleMap);
                     } else {
                         throw new RuntimeException("OneToMany and ManyToMany Relation, you must use collection or array object");
                     }
@@ -962,7 +1017,7 @@ public final class CascadeSQLiteImpl extends LiteOrm {
         if (insertNew && !Checker.isEmpty(coll)) {
             ArrayList<SQLStatement> sqlList = SQLBuilder.buildMappingToManySql(key1, table1, table2, coll);
             if (!Checker.isEmpty(sqlList)) {
-                for(SQLStatement sql: sqlList){
+                for (SQLStatement sql : sqlList) {
                     sql.execInsert(db);
                 }
             }

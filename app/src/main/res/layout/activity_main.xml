@@ -12,7 +12,7 @@
         android:background="@color/colorAccent"
         android:lineSpacingExtra="20dp"
         android:onClick="onClick"
-        android:text="写入"
+        android:text="写入 关联"
         android:textColor="#ffffff" />
 
     <Button
@@ -22,7 +22,44 @@
         android:layout_marginTop="20dp"
         android:lineSpacingExtra="20dp"
         android:onClick="onReadClick"
-        android:text="读取"
+        android:text="读取 关联"
+        android:textColor="#ffffff" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:layout_marginTop="20dp"
+        android:lineSpacingExtra="20dp"
+        android:onClick="onDeleteClick"
+        android:text="删除 关联"
+        android:textColor="#ffffff" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:lineSpacingExtra="20dp"
+        android:onClick="onSingClick"
+        android:text="写入 单一"
+        android:textColor="#ffffff" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:layout_marginTop="20dp"
+        android:lineSpacingExtra="20dp"
+        android:onClick="onSingReadClick"
+        android:text="读取 单一"
+        android:textColor="#ffffff" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:layout_marginTop="20dp"
+        android:lineSpacingExtra="20dp"
+        android:onClick="onSingDeleteClick"
+        android:text="删除 单一"
         android:textColor="#ffffff" />
 
 </LinearLayout>

@@ -16,6 +16,7 @@
 package com.ashlikun.orm.db;
 
 import android.database.sqlite.SQLiteDatabase;
+
 import com.ashlikun.orm.db.assit.QueryBuilder;
 import com.ashlikun.orm.db.assit.WhereBuilder;
 import com.ashlikun.orm.db.assit.SQLStatement;
@@ -139,6 +140,13 @@ public interface DataBase {
     int update(WhereBuilder builder, ColumnsValue cvs, ConflictAlgorithm conflictAlgorithm);
 
     /**
+     * 根据id删除
+     *
+     * @return the number of affected rows
+     */
+    int deleteById(Object id,Class claxx);
+
+    /**
      * delete a single entity
      *
      * @return the number of affected rows
@@ -249,7 +257,8 @@ public interface DataBase {
      * @return true if droped successfully.
      * @deprecated
      */
-    @Deprecated boolean dropTable(Object entity);
+    @Deprecated
+    boolean dropTable(Object entity);
 
     /**
      * drop a table
