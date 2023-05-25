@@ -46,6 +46,7 @@ data class CMyOneData(
     var time: Date? = null,
     var calendar: Calendar? = null,
     var ddddd: Adddd? = null,
+    var speeds: MutableList<Float> = mutableListOf(),
     var title2: String = "aaaaaaaaaa",
     var title3: String = "bbbbbbbbbbbb",
     var title4: String = "qqqqqqqq",

@@ -66,14 +66,15 @@ class MainActivity : AppCompatActivity() {
 
     fun onSingClick(v: View?) {
         val list = arrayListOf<CMyOneData>()
-        (0..100000).forEach {
+        (0..100).forEach {
             list.add(
                 CMyOneData(
                     it,
                     true,
                     Date(),
                     Calendar.getInstance(),
-                    ddddd = Adddd("sawwwwwwwwwwwwwwwwww")
+                    ddddd = Adddd("sawwwwwwwwwwwwwwwwww"),
+                    speeds = (0..100).map { it.toFloat() }.toMutableList()
                 )
             )
         }
@@ -88,7 +89,7 @@ class MainActivity : AppCompatActivity() {
         GlobalScope.launch {
             var start = System.currentTimeMillis()
             val aaa: List<CMyOneData> = LiteOrmUtil.get().query(CMyOneData::class.java)
-            Log.e("aaaa", "读取数据花费时间，数据量：${aaa.size} ${System.currentTimeMillis() - start}")
+            Log.e("aaaa", "读取数据花费时间，数据量：${aaa} ${System.currentTimeMillis() - start}")
         }
     }
 
