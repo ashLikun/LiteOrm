@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * SQLite支持的数据类型
@@ -313,7 +314,7 @@ public class DataUtil implements Serializable {
             return CLASS_TYPE_DATE;
         } else if (Calendar.class.isAssignableFrom(type)) {
             return CLASS_TYPE_CALENDAR;
-        } else if (Serializable.class.isAssignableFrom(type) || List.class.isAssignableFrom(type)) {
+        } else if (Serializable.class.isAssignableFrom(type) || Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type)) {
             return CLASS_TYPE_SERIALIZABLE;
         } else if (Parcelable.class.isAssignableFrom(type)) {
             return CLASS_TYPE_PARCELABLE;
